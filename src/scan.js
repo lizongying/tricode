@@ -8,7 +8,10 @@ window.onload = () => {
     const canvas = document.getElementById('canvas')
     const container = document.getElementById('canvasContainer')
 
-    const ctx = canvas.getContext('2d', {willReadFrequently: true})
+    const scan = document.getElementById('scan')
+    const copy = document.getElementById('copy')
+
+    const ctx = canvas.getContext('2d', { willReadFrequently: true })
 
     let renderId = 0
 
@@ -51,7 +54,7 @@ window.onload = () => {
             renderY = (canvasH - renderH) / 2
         }
 
-        return {x: renderX, y: renderY, w: renderW, h: renderH}
+        return { x: renderX, y: renderY, w: renderW, h: renderH }
     }
 
     const playBeep = () => {
@@ -109,9 +112,9 @@ window.onload = () => {
         try {
             video.srcObject = await navigator.mediaDevices?.getUserMedia({
                 video: {
-                    facingMode: {ideal: 'environment'},
-                    width: {ideal: 1080},
-                    height: {ideal: 1920},
+                    facingMode: { ideal: 'environment' },
+                    width: { ideal: 1080 },
+                    height: { ideal: 1920 },
                 },
             })
 
@@ -257,6 +260,35 @@ window.onload = () => {
     initWorker()
     initCamera().then()
     initMask()
+
+    scan.onclick = () => {
+        result.textContent = ''
+    }
+
+    /**
+     * Copy text to the clipboard (for modern browsers)
+     * @param {string} text - The text content to be copied
+     * @returns {Promise<string>} - Returns the copied text on success, throws an error message on failure
+     */
+    async function copyToClipboard(text) {
+        try {
+            await navigator.clipboard.writeText(text)
+            console.log('Copy successful!')
+            return text
+        } catch (error) {
+            console.error('Copy failed: ', error)
+            throw new Error('複製失敗，請手動複製')
+        }
+    }
+
+    copy.onclick = async () => {
+        try {
+            await copyToClipboard(result.textContent)
+            alert('複製成功')
+        } catch (err) {
+            alert(err.message)
+        }
+    }
 
     window.addEventListener('resize', () => {
         setCanvasFullContainer()
